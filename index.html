@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoMind AI Tutor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <h1>🧠 EchoMind AI Tutor</h1>
+      <p class="tagline">Emotion-Aware English Learning Chatbot</p>
+      <div class="header-stats">
+        <span id="points-pill" class="pill">⭐ Points: 0</span>
+        <span id="streak-pill" class="pill">🔥 Streak: 0</span>
+      </div>
+      <div id="server-status" class="server-status offline">
+        <span class="status-dot"></span>
+        <span id="server-status-text">🔴 Offline</span>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <aside class="sidebar card">
+        <h2>🎓 Dashboard Sidebar</h2>
+        <div class="form-group">
+          <label for="lesson-select">Lesson Topic</label>
+          <select id="lesson-select">
+            <option value="Daily Conversation">💬 Daily Conversation</option>
+            <option value="Business English">💼 Business English</option>
+            <option value="Travel English">✈️ Travel English</option>
+            <option value="Grammar Focus">📝 Grammar Focus</option>
+            <option value="IELTS Prep">🎯 IELTS Prep</option>
+          </select>
+        </div>
+
+        <div class="stats-container">
+          <div class="stat-block">
+            <div class="stat-label">
+              <span>😊 Mood Meter</span>
+              <span id="mood-value">Neutral</span>
+            </div>
+            <div class="progress-bar">
+              <div id="mood-bar" class="progress-fill mood-fill"></div>
+            </div>
+          </div>
+
+          <div class="stat-block">
+            <div class="stat-label">
+              <span>📈 Difficulty Meter</span>
+              <span id="difficulty-value">Easy</span>
+            </div>
+            <div class="progress-bar">
+              <div id="difficulty-bar" class="progress-fill difficulty-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <button id="reset-btn" class="btn btn-secondary" type="button">Restart Lesson</button>
+
+        <nav class="sidebar-tabs">
+          <button id="chat-tab-btn" class="tab-btn active" type="button">💬 Chat</button>
+          <button id="assignment-tab-btn" class="tab-btn" type="button">📝 Assignment</button>
+          <button id="flashcards-tab-btn" class="tab-btn" type="button">🃏 Flashcards</button>
+          <button id="pronunciation-tab-btn" class="tab-btn" type="button">🎙️ Pronunciation</button>
+          <button id="results-tab-btn" class="tab-btn" type="button">📊 Results</button>
+        </nav>
+
+        <section class="info-box">
+          <h3>How It Works</h3>
+          <p>EchoMind detects your mood from your message, updates lesson difficulty, and asks Gemini to teach in a matching tone.</p>
+        </section>
+      </aside>
+
+      <section class="chat-section card">
+        <div id="chat-tab" class="tab-panel active">
+          <div id="chat-messages" class="chat-messages"></div>
+
+          <div id="feedback-banner" class="feedback-banner hidden" role="status" aria-live="polite">
+            <span id="feedback-text"></span>
+          </div>
+
+          <p id="points-message" class="points-message hidden"></p>
+
+          <div class="input-area">
+            <textarea id="user-input" rows="2" placeholder="Type in English... (Enter to send, Shift+Enter for new line)"></textarea>
+            <button id="voice-btn" class="btn btn-secondary voice-btn" type="button" title="Start voice input">🎤</button>
+            <button id="tts-btn" class="btn btn-secondary voice-btn" type="button" title="Toggle AI voice">🔊</button>
+            <button id="send-btn" class="btn btn-primary" type="button">Send</button>
+          </div>
+          <p id="voice-status" class="voice-status">Voice: Ready</p>
+        </div>
+
+        <div id="assignment-tab" class="tab-panel">
+          <div class="assignment-controls">
+            <div class="form-group">
+              <label for="assignment-difficulty">Difficulty</label>
+              <select id="assignment-difficulty">
+                <option value="Easy">Easy</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="assignment-type">Assignment Type</label>
+              <select id="assignment-type">
+                <option value="past_tense">Write 5 sentences using past tense</option>
+                <option value="describe_image">Describe an image</option>
+                <option value="sentence_correction">Correct 10 incorrect sentences</option>
+                <option value="short_paragraph">Write a short paragraph (50-100 words)</option>
+              </select>
+            </div>
+            <button id="generate-assignment-btn" class="btn btn-primary" type="button">Generate Assignment</button>
+          </div>
+
+          <div id="assignment-card" class="assignment-card hidden">
+            <h3>Current Assignment</h3>
+            <p id="assignment-prompt"></p>
+            <img id="assignment-image" class="assignment-image hidden" alt="Assignment reference">
+            <textarea id="assignment-answer" rows="6" placeholder="Write your answer here..."></textarea>
+            <button id="submit-assignment-btn" class="btn btn-primary" type="button">Submit for Grading</button>
+          </div>
+
+          <div id="assignment-result" class="assignment-result hidden"></div>
+          <div id="assignment-history" class="assignment-history"></div>
+        </div>
+
+        <div id="flashcards-tab" class="tab-panel">
+          <div class="learning-card">
+            <h3>🃏 Flashcard Learning</h3>
+            <p id="flashcard-empty" class="voice-status">No flashcards yet. Save corrections from chat first.</p>
+            <div id="flashcard-box" class="flashcard-box hidden">
+              <p id="flashcard-text"></p>
+              <div class="flashcard-actions">
+                <button id="prev-flashcard-btn" class="mini-btn" type="button">Prev</button>
+                <button id="next-flashcard-btn" class="mini-btn" type="button">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pronunciation-tab" class="tab-panel">
+          <div class="learning-card">
+            <h3>🎙️ Pronunciation Tester</h3>
+            <label for="pronunciation-target">Target sentence</label>
+            <textarea id="pronunciation-target" rows="3" placeholder="Type sentence to practice pronunciation..."></textarea>
+            <button id="suggest-pronunciation-btn" class="mini-btn" type="button">Suggest Sentence For Me</button>
+            <button id="start-pronunciation-btn" class="btn btn-primary" type="button">Start Pronunciation Test</button>
+            <p id="pronunciation-heard" class="voice-status"></p>
+            <div id="pronunciation-score" class="assignment-result hidden"></div>
+          </div>
+        </div>
+
+        <div id="results-tab" class="tab-panel">
+          <div class="learning-card">
+            <h3>📊 Learning Results</h3>
+            <div id="results-summary"></div>
+            <div id="results-history" class="assignment-history"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
